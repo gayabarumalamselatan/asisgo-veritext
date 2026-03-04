@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useVerification } from "@/lib/verification-context";
 import { ExtractedContent } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,8 @@ interface ExtractionProps {
 }
 
 export function DocumentExtraction({ onComplete }: ExtractionProps) {
-  const { workflow, setExtractedContent, moveToStep } = useVerification();
+  const { workflow, setExtractedContent } = useVerification();
+  const router = useRouter();
   const [isProcessing, setIsProcessing] = useState(false);
   const [extractedDocuments, setExtractedDocuments] = useState<
     Map<string, ExtractedContent>
@@ -120,7 +122,7 @@ export function DocumentExtraction({ onComplete }: ExtractionProps) {
 
   const handleProceedToComparison = () => {
     if (workflow && extractedDocuments.size === workflow.documents.length) {
-      moveToStep("compare");
+      router.push("/compare");
       onComplete?.();
     }
   };
@@ -134,7 +136,7 @@ export function DocumentExtraction({ onComplete }: ExtractionProps) {
         <Button
           onClick={handleExtractAll}
           disabled={isProcessing || !workflow?.documents.length}
-          className="w-full hover:cursor-pointer"
+          className="w-full"
         >
           {isProcessing
             ? "Extracting..."
@@ -240,7 +242,7 @@ export function DocumentExtraction({ onComplete }: ExtractionProps) {
                       onClick={() => handleExportOCR(extracted, doc.name)}
                       variant="outline"
                       size="sm"
-                      className="flex-1 hover:cursor-pointer"
+                      className="flex-1"
                     >
                       <svg
                         className="w-4 h-4 mr-2"
@@ -264,7 +266,7 @@ export function DocumentExtraction({ onComplete }: ExtractionProps) {
                   onClick={() => handleExtractDocument(doc.id)}
                   disabled={isProcessing}
                   variant="outline"
-                  className="w-full hover:cursor-pointer"
+                  className="w-full"
                 >
                   Extract This Document
                 </Button>
@@ -276,10 +278,7 @@ export function DocumentExtraction({ onComplete }: ExtractionProps) {
 
       {extractedDocuments.size === workflow?.documents.length &&
         workflow.documents.length > 0 && (
-          <Button
-            onClick={handleProceedToComparison}
-            className="w-full mt-6 hover:cursor-pointer"
-          >
+          <Button onClick={handleProceedToComparison} className="w-full mt-6">
             Proceed to Comparison
           </Button>
         )}

@@ -1,7 +1,16 @@
-'use client';
+"use client";
 
-import React, { createContext, useContext, useState, useCallback } from 'react';
-import { VerificationWorkflow, Document, ExtractedContent, Comparison, ComplianceResult, Insight, VerificationResult, AuditTrail } from './types';
+import React, { createContext, useContext, useState, useCallback } from "react";
+import {
+  VerificationWorkflow,
+  Document,
+  ExtractedContent,
+  Comparison,
+  ComplianceResult,
+  Insight,
+  VerificationResult,
+  AuditTrail,
+} from "./types";
 
 interface VerificationContextType {
   workflow: VerificationWorkflow | null;
@@ -13,16 +22,20 @@ interface VerificationContextType {
   setComplianceResults: (results: ComplianceResult[]) => void;
   setInsights: (documentId: string, insights: Insight) => void;
   setVerificationResult: (result: VerificationResult) => void;
-  addAuditTrail: (audit: Omit<AuditTrail, 'id'>) => void;
+  addAuditTrail: (audit: Omit<AuditTrail, "id">) => void;
   exportData: () => string;
   getCurrentStep: () => string;
-  moveToStep: (step: VerificationWorkflow['currentStep']) => void;
+  moveToStep: (step: VerificationWorkflow["currentStep"]) => void;
   clearWorkflow: () => void;
 }
 
-const VerificationContext = createContext<VerificationContextType | undefined>(undefined);
+const VerificationContext = createContext<VerificationContextType | undefined>(
+  undefined,
+);
 
-export const VerificationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const VerificationProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [workflow, setWorkflow] = useState<VerificationWorkflow | null>(null);
 
   const initializeWorkflow = useCallback(() => {
@@ -30,106 +43,111 @@ export const VerificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       id: `workflow-${Date.now()}`,
       createdAt: new Date(),
       updatedAt: new Date(),
-      currentStep: 'upload',
+      currentStep: "upload",
       documents: [],
       extracted: [],
       comparisons: [],
       compliance: [],
       insights: [],
       verification: {
-        id: '',
-        documentId: '',
+        id: "",
+        documentId: "",
         verifiedAt: new Date(),
-        status: 'pending',
-        decision: '',
-        verifiedBy: '',
-        notes: '',
+        status: "pending",
+        decision: "",
+        verifiedBy: "",
+        notes: "",
       },
       auditTrail: [],
     };
     setWorkflow(newWorkflow);
   }, []);
 
-  const addDocument = useCallback((file: File) => {
-    if (!workflow) return;
+  const addDocument = useCallback(
+    (file: File) => {
+      if (!workflow) return;
 
-    // For XLSX files, read as ArrayBuffer; for others, read as Text
-    if (file.name.endsWith('.xlsx')) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const arrayBuffer = e.target?.result as ArrayBuffer;
-        const uint8Array = new Uint8Array(arrayBuffer);
-        const binaryString = String.fromCharCode(...uint8Array);
-        const newDoc: Document = {
-          id: `doc-${Date.now()}`,
-          name: file.name,
-          type: file.type || 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-          fileSize: file.size,
-          uploadedAt: new Date(),
-          content: binaryString,
-          metadata: {
-            language: 'en',
-            quality: 'high',
-          },
-        };
-
-        setWorkflow((prev) => {
-          if (!prev) return prev;
-          return {
-            ...prev,
-            documents: [...prev.documents, newDoc],
-            updatedAt: new Date(),
+      // For XLSX files, read as ArrayBuffer; for others, read as Text
+      if (file.name.endsWith(".xlsx")) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const arrayBuffer = e.target?.result as ArrayBuffer;
+          const uint8Array = new Uint8Array(arrayBuffer);
+          const binaryString = String.fromCharCode(...uint8Array);
+          const newDoc: Document = {
+            id: `doc-${Date.now()}`,
+            name: file.name,
+            type:
+              file.type ||
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            fileSize: file.size,
+            uploadedAt: new Date(),
+            content: binaryString,
+            metadata: {
+              language: "en",
+              quality: "high",
+            },
           };
-        });
 
-        addAuditTrail({
-          action: 'DOCUMENT_UPLOADED',
-          documentId: newDoc.id,
-          timestamp: new Date(),
-          userId: 'system',
-          changes: [],
-          details: `Uploaded document: ${file.name}`,
-        });
-      };
-      reader.readAsArrayBuffer(file);
-    } else {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const content = e.target?.result as string;
-        const newDoc: Document = {
-          id: `doc-${Date.now()}`,
-          name: file.name,
-          type: file.type || 'text/plain',
-          fileSize: file.size,
-          uploadedAt: new Date(),
-          content,
-          metadata: {
-            language: 'en',
-            quality: 'high',
-          },
+          setWorkflow((prev) => {
+            if (!prev) return prev;
+            return {
+              ...prev,
+              documents: [...prev.documents, newDoc],
+              updatedAt: new Date(),
+            };
+          });
+
+          addAuditTrail({
+            action: "DOCUMENT_UPLOADED",
+            documentId: newDoc.id,
+            timestamp: new Date(),
+            userId: "system",
+            changes: [],
+            details: `Uploaded document: ${file.name}`,
+          });
         };
-
-        setWorkflow((prev) => {
-          if (!prev) return prev;
-          return {
-            ...prev,
-            documents: [...prev.documents, newDoc],
-            updatedAt: new Date(),
+        reader.readAsArrayBuffer(file);
+      } else {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const content = e.target?.result as string;
+          const newDoc: Document = {
+            id: `doc-${Date.now()}`,
+            name: file.name,
+            type: file.type || "text/plain",
+            fileSize: file.size,
+            uploadedAt: new Date(),
+            content,
+            metadata: {
+              language: "en",
+              quality: "high",
+            },
           };
-        });
 
-        addAuditTrail({
-          action: 'DOCUMENT_UPLOADED',
-          documentId: newDoc.id,
-          timestamp: new Date(),
-          userId: 'system',
-          changes: [],
-          details: `Uploaded document: ${file.name}`,
-        });
-      };
-      reader.readAsText(file);
-    }
-  }, [workflow]);
+          setWorkflow((prev) => {
+            if (!prev) return prev;
+            return {
+              ...prev,
+              documents: [...prev.documents, newDoc],
+              updatedAt: new Date(),
+            };
+          });
+
+          addAuditTrail({
+            action: "DOCUMENT_UPLOADED",
+            documentId: newDoc.id,
+            timestamp: new Date(),
+            userId: "system",
+            changes: [],
+            details: `Uploaded document: ${file.name}`,
+          });
+        };
+        reader.readAsText(file);
+      }
+    },
+    [workflow],
+  );
 
   const removeDocument = useCallback((documentId: string) => {
     setWorkflow((prev) => {
@@ -143,31 +161,48 @@ export const VerificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     });
   }, []);
 
-  const setExtractedContent = useCallback((documentId: string, content: ExtractedContent) => {
-    setWorkflow((prev) => {
-      if (!prev) return prev;
-      const existingIndex = prev.extracted.findIndex((e) => e.documentId === documentId);
-      const updated = existingIndex >= 0 
-        ? [...prev.extracted.slice(0, existingIndex), content, ...prev.extracted.slice(existingIndex + 1)]
-        : [...prev.extracted, content];
-      
-      return {
-        ...prev,
-        extracted: updated,
-        updatedAt: new Date(),
-      };
-    });
-  }, []);
+  const setExtractedContent = useCallback(
+    (documentId: string, content: ExtractedContent) => {
+      setWorkflow((prev) => {
+        if (!prev) return prev;
+        const existingIndex = prev.extracted.findIndex(
+          (e) => e.documentId === documentId,
+        );
+        const updated =
+          existingIndex >= 0
+            ? [
+                ...prev.extracted.slice(0, existingIndex),
+                content,
+                ...prev.extracted.slice(existingIndex + 1),
+              ]
+            : [...prev.extracted, content];
+
+        return {
+          ...prev,
+          extracted: updated,
+          updatedAt: new Date(),
+        };
+      });
+    },
+    [],
+  );
 
   const setComparison = useCallback((comparison: Comparison) => {
     setWorkflow((prev) => {
       if (!prev) return prev;
       const existingIndex = prev.comparisons.findIndex(
-        (c) => c.document1Id === comparison.document1Id && c.document2Id === comparison.document2Id
+        (c) =>
+          c.document1Id === comparison.document1Id &&
+          c.document2Id === comparison.document2Id,
       );
-      const updated = existingIndex >= 0
-        ? [...prev.comparisons.slice(0, existingIndex), comparison, ...prev.comparisons.slice(existingIndex + 1)]
-        : [...prev.comparisons, comparison];
+      const updated =
+        existingIndex >= 0
+          ? [
+              ...prev.comparisons.slice(0, existingIndex),
+              comparison,
+              ...prev.comparisons.slice(existingIndex + 1),
+            ]
+          : [...prev.comparisons, comparison];
 
       return {
         ...prev,
@@ -191,10 +226,17 @@ export const VerificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const setInsights = useCallback((documentId: string, insights: Insight) => {
     setWorkflow((prev) => {
       if (!prev) return prev;
-      const existingIndex = prev.insights.findIndex((i) => i.documentId === documentId);
-      const updated = existingIndex >= 0
-        ? [...prev.insights.slice(0, existingIndex), insights, ...prev.insights.slice(existingIndex + 1)]
-        : [...prev.insights, insights];
+      const existingIndex = prev.insights.findIndex(
+        (i) => i.documentId === documentId,
+      );
+      const updated =
+        existingIndex >= 0
+          ? [
+              ...prev.insights.slice(0, existingIndex),
+              insights,
+              ...prev.insights.slice(existingIndex + 1),
+            ]
+          : [...prev.insights, insights];
 
       return {
         ...prev,
@@ -215,7 +257,7 @@ export const VerificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     });
   }, []);
 
-  const addAuditTrail = useCallback((audit: Omit<AuditTrail, 'id'>) => {
+  const addAuditTrail = useCallback((audit: Omit<AuditTrail, "id">) => {
     setWorkflow((prev) => {
       if (!prev) return prev;
       const newAudit: AuditTrail = {
@@ -231,22 +273,25 @@ export const VerificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   }, []);
 
   const getCurrentStep = useCallback(() => {
-    return workflow?.currentStep || 'upload';
+    return workflow?.currentStep || "upload";
   }, [workflow]);
 
-  const moveToStep = useCallback((step: VerificationWorkflow['currentStep']) => {
-    setWorkflow((prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        currentStep: step,
-        updatedAt: new Date(),
-      };
-    });
-  }, []);
+  const moveToStep = useCallback(
+    (step: VerificationWorkflow["currentStep"]) => {
+      setWorkflow((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          currentStep: step,
+          updatedAt: new Date(),
+        };
+      });
+    },
+    [],
+  );
 
   const exportData = useCallback(() => {
-    if (!workflow) return '';
+    if (!workflow) return "";
     return JSON.stringify(workflow, null, 2);
   }, [workflow]);
 
@@ -281,7 +326,7 @@ export const VerificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 export const useVerification = () => {
   const context = useContext(VerificationContext);
   if (!context) {
-    throw new Error('useVerification must be used within VerificationProvider');
+    throw new Error("useVerification must be used within VerificationProvider");
   }
   return context;
 };

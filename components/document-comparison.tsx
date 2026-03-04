@@ -1,17 +1,20 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useVerification } from "@/lib/verification-context";
 import { Comparison, DifferenceItem } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import Link from "next/link";
 
 interface ComparisonProps {
   onComplete?: () => void;
 }
 
 export function DocumentComparison({ onComplete }: ComparisonProps) {
-  const { workflow, setComparison, moveToStep } = useVerification();
+  const { workflow, setComparison } = useVerification();
+  const router = useRouter();
   const [isProcessing, setIsProcessing] = useState(false);
   const [comparisons, setComparisons] = useState<Map<string, Comparison>>(
     new Map(),
@@ -66,7 +69,7 @@ export function DocumentComparison({ onComplete }: ComparisonProps) {
 
   const handleProceedToCompliance = () => {
     if (comparisons.size > 0) {
-      moveToStep("compliance");
+      router.push("/compliance");
       onComplete?.();
     }
   };
@@ -112,7 +115,7 @@ export function DocumentComparison({ onComplete }: ComparisonProps) {
                         onClick={() => handleCompareDocuments(doc1.id, doc2.id)}
                         disabled={isProcessing}
                         variant={isCompared ? "default" : "outline"}
-                        className="w-full mb-2 justify-start text-left hover:cursor-pointer"
+                        className="w-full mb-2 justify-start text-left"
                       >
                         <span className="truncate">
                           {doc1.name} vs {doc2.name}
@@ -214,10 +217,7 @@ export function DocumentComparison({ onComplete }: ComparisonProps) {
           )}
 
           {comparisons.size > 0 && (
-            <Button
-              onClick={handleProceedToCompliance}
-              className="w-full mt-6 hover:cursor-pointer"
-            >
+            <Button onClick={handleProceedToCompliance} className="w-full mt-6">
               Proceed to Compliance Check
             </Button>
           )}

@@ -3,14 +3,14 @@
 export interface Document {
   id: string;
   name: string;
-  type: 'assessment' | 'supervision' | 'followup' | 'other';
+  type: "assessment" | "supervision" | "followup" | "other";
   fileSize: number;
   uploadedAt: Date;
   content: string; // Raw file content or OCR result
   metadata: {
     pages?: number;
     language?: string;
-    quality?: 'high' | 'medium' | 'low';
+    quality?: "high" | "medium" | "low";
   };
 }
 
@@ -49,7 +49,7 @@ export interface DifferenceItem {
   field: string;
   document1Value: string;
   document2Value: string;
-  severity: 'critical' | 'major' | 'minor';
+  severity: "critical" | "major" | "minor";
   detected: boolean; // true if potential manipulation
 }
 
@@ -57,9 +57,9 @@ export interface ComplianceRule {
   id: string;
   name: string;
   description: string;
-  category: 'format' | 'content' | 'temporal' | 'reference';
+  category: "format" | "content" | "temporal" | "reference";
   condition: (content: ExtractedContent) => boolean;
-  severity: 'error' | 'warning' | 'info';
+  severity: "error" | "warning" | "info";
 }
 
 export interface ComplianceResult {
@@ -69,7 +69,7 @@ export interface ComplianceResult {
   ruleId: string;
   passed: boolean;
   message: string;
-  severity: 'error' | 'warning' | 'info';
+  severity: "error" | "warning" | "info";
 }
 
 export interface Insight {
@@ -86,7 +86,7 @@ export interface Insight {
 export interface AnomalyItem {
   field: string;
   value: string;
-  riskLevel: 'high' | 'medium' | 'low';
+  riskLevel: "high" | "medium" | "low";
   description: string;
 }
 
@@ -94,7 +94,7 @@ export interface VerificationResult {
   id: string;
   documentId: string;
   verifiedAt: Date;
-  status: 'approved' | 'rejected' | 'pending' | 'flagged';
+  status: "approved" | "rejected" | "pending" | "flagged";
   decision: string;
   verifiedBy: string;
   notes: string;
@@ -118,7 +118,14 @@ export interface VerificationWorkflow {
   id: string;
   createdAt: Date;
   updatedAt: Date;
-  currentStep: 'upload' | 'extract' | 'compare' | 'compliance' | 'insights' | 'review' | 'complete';
+  currentStep:
+    | "upload"
+    | "extract"
+    | "comparison"
+    | "compliance"
+    | "insights"
+    | "review"
+    | "complete";
   documents: Document[];
   extracted: ExtractedContent[];
   comparisons: Comparison[];

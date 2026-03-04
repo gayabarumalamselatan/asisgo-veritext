@@ -7,10 +7,14 @@ import { Card } from "@/components/ui/card";
 
 interface DocumentUploadProps {
   onComplete?: () => void;
+  onProceedExtraction?: () => void;
 }
 
-export function DocumentUpload({ onComplete }: DocumentUploadProps) {
-  const { workflow, addDocument, moveToStep } = useVerification();
+export function DocumentUpload({
+  onComplete,
+  onProceedExtraction,
+}: DocumentUploadProps) {
+  const { workflow, addDocument } = useVerification();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -52,7 +56,7 @@ export function DocumentUpload({ onComplete }: DocumentUploadProps) {
 
   const handleProceed = () => {
     if (workflow && workflow.documents.length > 0) {
-      moveToStep("extract");
+      onProceedExtraction?.();
       onComplete?.();
     }
   };
@@ -97,7 +101,7 @@ export function DocumentUpload({ onComplete }: DocumentUploadProps) {
 
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="inline-block px-6 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors hover:cursor-pointer"
+            className="inline-block px-6 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
           >
             Select Files
           </button>
@@ -141,7 +145,7 @@ export function DocumentUpload({ onComplete }: DocumentUploadProps) {
             <Button
               onClick={handleProceed}
               disabled={isProcessing}
-              className="w-full hover:cursor-pointer"
+              className="w-full"
             >
               {isProcessing ? "Processing..." : "Proceed to Extraction"}
             </Button>

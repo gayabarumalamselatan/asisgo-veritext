@@ -5,13 +5,15 @@ import { useVerification } from "@/lib/verification-context";
 import { Insight } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useRouter } from "next/navigation";
 
 interface InsightsProps {
   onComplete?: () => void;
 }
 
 export function DocumentInsights({ onComplete }: InsightsProps) {
-  const { workflow, setInsights, moveToStep } = useVerification();
+  const router = useRouter();
+  const { workflow, setInsights } = useVerification();
   const [isProcessing, setIsProcessing] = useState(false);
   const [insights, setLocalInsights] = useState<Map<string, Insight>>(
     new Map(),
@@ -62,7 +64,7 @@ export function DocumentInsights({ onComplete }: InsightsProps) {
 
   const handleProceedToReview = () => {
     if (insights.size === workflow?.documents.length) {
-      moveToStep("review");
+      router.push("/review");
       onComplete?.();
     }
   };
@@ -103,7 +105,7 @@ export function DocumentInsights({ onComplete }: InsightsProps) {
         <Button
           onClick={handleGenerateAll}
           disabled={isProcessing || !workflow?.documents.length}
-          className="w-full hover:cursor-pointer"
+          className="w-full"
         >
           {isProcessing
             ? "Generating Insights..."
@@ -234,7 +236,7 @@ export function DocumentInsights({ onComplete }: InsightsProps) {
                   onClick={() => handleGenerateInsights(doc.id)}
                   disabled={isProcessing}
                   variant="outline"
-                  className="w-full hover:cursor-pointer"
+                  className="w-full"
                 >
                   Generate Insights
                 </Button>
@@ -246,10 +248,7 @@ export function DocumentInsights({ onComplete }: InsightsProps) {
 
       {insights.size === workflow?.documents.length &&
         workflow?.documents.length! > 0 && (
-          <Button
-            onClick={handleProceedToReview}
-            className="w-full mt-6 hover:cursor-pointer"
-          >
+          <Button onClick={handleProceedToReview} className="w-full mt-6">
             Proceed to Review & Decision
           </Button>
         )}

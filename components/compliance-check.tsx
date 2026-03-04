@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useVerification } from "@/lib/verification-context";
 import { ComplianceResult } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,8 @@ interface ComplianceCheckProps {
 }
 
 export function ComplianceCheck({ onComplete }: ComplianceCheckProps) {
-  const { workflow, setComplianceResults, moveToStep } = useVerification();
+  const { workflow, setComplianceResults } = useVerification();
+  const router = useRouter();
   const [isProcessing, setIsProcessing] = useState(false);
   const [results, setResults] = useState<ComplianceResult[]>([]);
 
@@ -48,7 +50,7 @@ export function ComplianceCheck({ onComplete }: ComplianceCheckProps) {
   };
 
   const handleProceedToInsights = () => {
-    moveToStep("insights");
+    router.push("/insights");
     onComplete?.();
   };
 
@@ -110,7 +112,7 @@ export function ComplianceCheck({ onComplete }: ComplianceCheckProps) {
           <Button
             onClick={handleRunCompliance}
             disabled={isProcessing || !workflow?.extracted.length}
-            className="px-6 hover:cursor-pointer"
+            className="px-6"
           >
             {isProcessing ? "Running Checks..." : "Run Compliance Check"}
           </Button>
@@ -205,14 +207,11 @@ export function ComplianceCheck({ onComplete }: ComplianceCheckProps) {
               onClick={handleRunCompliance}
               disabled={isProcessing}
               variant="outline"
-              className="flex-1 hover:cursor-pointer"
+              className="flex-1"
             >
               Re-run Checks
             </Button>
-            <Button
-              onClick={handleProceedToInsights}
-              className="flex-1 hover:cursor-pointer"
-            >
+            <Button onClick={handleProceedToInsights} className="flex-1">
               Proceed to Insights
             </Button>
           </div>

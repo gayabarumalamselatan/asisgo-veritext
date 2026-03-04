@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useVerification } from "@/lib/verification-context";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -10,8 +11,8 @@ interface ReviewProps {
 }
 
 export function ReviewAndDecision({ onComplete }: ReviewProps) {
-  const { workflow, setVerificationResult, moveToStep, addAuditTrail } =
-    useVerification();
+  const { workflow, setVerificationResult, addAuditTrail } = useVerification();
+  const router = useRouter();
   const [selectedDecision, setSelectedDecision] = useState<
     "approved" | "rejected" | "flagged" | null
   >(null);
@@ -53,7 +54,7 @@ export function ReviewAndDecision({ onComplete }: ReviewProps) {
       });
 
       // Move to completion
-      moveToStep("complete");
+      router.push("/complete");
       onComplete?.();
     } catch (error) {
       console.error("Decision submission failed:", error);
@@ -224,7 +225,7 @@ export function ReviewAndDecision({ onComplete }: ReviewProps) {
         <Button
           onClick={handleSubmitDecision}
           disabled={!selectedDecision || isSubmitting}
-          className="w-full bg-primary text-primary-foreground hover:bg-primary/90 hover:cursor-pointer"
+          className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
         >
           {isSubmitting ? "Submitting..." : "Submit Decision & Continue"}
         </Button>

@@ -89,8 +89,37 @@ export function DocumentExtraction({ onComplete }: ExtractionProps) {
     setIsProcessing(false);
   };
 
+  const handleExportOCR = (extracted: ExtractedContent, docName: string) => {
+    // Create a formatted export object
+    const exportData = {
+      exportedAt: new Date().toISOString(),
+      documentName: docName,
+      extraction: {
+        confidence: extracted.confidence,
+        keyInformation: extracted.keyInformation,
+        entities: extracted.entities,
+        rawText: extracted.rawText,
+      },
+    };
+
+    const jsonString = JSON.stringify(exportData, null, 2);
+    const element = document.createElement("a");
+    element.setAttribute(
+      "href",
+      `data:application/json;charset=utf-8,${encodeURIComponent(jsonString)}`,
+    );
+    element.setAttribute(
+      "download",
+      `ocr-extraction-${docName.replace(/[^a-z0-9]/gi, "_").toLowerCase()}-${Date.now()}.json`,
+    );
+    element.style.display = "none";
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  };
+
   const handleProceedToComparison = () => {
-    if (extractedDocuments.size === workflow?.documents.length) {
+    if (workflow && extractedDocuments.size === workflow.documents.length) {
       moveToStep("compare");
       onComplete?.();
     }
@@ -204,6 +233,30 @@ export function DocumentExtraction({ onComplete }: ExtractionProps) {
                         </div>
                       )}
                     </div>
+                  </div>
+
+                  <div className="flex gap-2 pt-4 border-t border-border">
+                    <Button
+                      onClick={() => handleExportOCR(extracted, doc.name)}
+                      variant="outline"
+                      size="sm"
+                      className="flex-1"
+                    >
+                      <svg
+                        className="w-4 h-4 mr-2"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 19l9 2-9-18-9 18 9-2m0 0v-8m0 0V5m9 11l-9-2m0 0l-9 2"
+                        />
+                      </svg>
+                      Export OCR as JSON
+                    </Button>
                   </div>
                 </div>
               ) : (

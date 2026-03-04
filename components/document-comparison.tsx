@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useVerification } from '@/lib/verification-context';
-import { Comparison, DifferenceItem } from '@/lib/types';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { useState } from "react";
+import { useVerification } from "@/lib/verification-context";
+import { Comparison, DifferenceItem } from "@/lib/types";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 interface ComparisonProps {
   onComplete?: () => void;
@@ -13,8 +13,12 @@ interface ComparisonProps {
 export function DocumentComparison({ onComplete }: ComparisonProps) {
   const { workflow, setComparison, moveToStep } = useVerification();
   const [isProcessing, setIsProcessing] = useState(false);
-  const [comparisons, setComparisons] = useState<Map<string, Comparison>>(new Map());
-  const [selectedComparisonId, setSelectedComparisonId] = useState<string | null>(null);
+  const [comparisons, setComparisons] = useState<Map<string, Comparison>>(
+    new Map(),
+  );
+  const [selectedComparisonId, setSelectedComparisonId] = useState<
+    string | null
+  >(null);
 
   const handleCompareDocuments = async (doc1Id: string, doc2Id: string) => {
     const doc1 = workflow?.documents.find((d) => d.id === doc1Id);
@@ -26,9 +30,9 @@ export function DocumentComparison({ onComplete }: ComparisonProps) {
 
     setIsProcessing(true);
     try {
-      const response = await fetch('/api/compare', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/compare", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           content1: doc1.content,
           content2: doc2.content,
@@ -54,7 +58,7 @@ export function DocumentComparison({ onComplete }: ComparisonProps) {
         setSelectedComparisonId(`${doc1Id}-${doc2Id}`);
       }
     } catch (error) {
-      console.error('Comparison failed:', error);
+      console.error("Comparison failed:", error);
     } finally {
       setIsProcessing(false);
     }
@@ -62,19 +66,23 @@ export function DocumentComparison({ onComplete }: ComparisonProps) {
 
   const handleProceedToCompliance = () => {
     if (comparisons.size > 0) {
-      moveToStep('compliance');
+      moveToStep("compliance");
       onComplete?.();
     }
   };
 
   const renderSeverityBadge = (severity: string) => {
     const colors = {
-      critical: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
-      major: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
-      minor: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+      critical: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
+      major:
+        "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
+      minor:
+        "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
     };
     return (
-      <span className={`text-xs font-semibold px-2 py-1 rounded ${colors[severity as keyof typeof colors]}`}>
+      <span
+        className={`text-xs font-semibold px-2 py-1 rounded ${colors[severity as keyof typeof colors]}`}
+      >
         {severity.toUpperCase()}
       </span>
     );
@@ -82,7 +90,9 @@ export function DocumentComparison({ onComplete }: ComparisonProps) {
 
   return (
     <div className="w-full max-w-5xl mx-auto">
-      <h3 className="text-lg font-semibold mb-6">Document Comparison (Jika Revisi)</h3>
+      <h3 className="text-lg font-semibold mb-6">
+        Document Comparison (Jika Revisi)
+      </h3>
 
       {workflow && workflow.documents.length > 1 ? (
         <div className="space-y-4">
@@ -101,7 +111,7 @@ export function DocumentComparison({ onComplete }: ComparisonProps) {
                         key={key}
                         onClick={() => handleCompareDocuments(doc1.id, doc2.id)}
                         disabled={isProcessing}
-                        variant={isCompared ? 'default' : 'outline'}
+                        variant={isCompared ? "default" : "outline"}
                         className="w-full mb-2 justify-start text-left"
                       >
                         <span className="truncate">
@@ -122,26 +132,49 @@ export function DocumentComparison({ onComplete }: ComparisonProps) {
                 <Card
                   key={comparison.id}
                   className="p-6 cursor-pointer hover:shadow-md transition-shadow"
-                  onClick={() => setSelectedComparisonId(`${comparison.document1Id}-${comparison.document2Id}`)}
+                  onClick={() =>
+                    setSelectedComparisonId(
+                      `${comparison.document1Id}-${comparison.document2Id}`,
+                    )
+                  }
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div>
                       <h4 className="font-semibold mb-2">
-                        {workflow.documents.find((d) => d.id === comparison.document1Id)?.name} vs{' '}
-                        {workflow.documents.find((d) => d.id === comparison.document2Id)?.name}
+                        {
+                          workflow.documents.find(
+                            (d) => d.id === comparison.document1Id,
+                          )?.name
+                        }{" "}
+                        vs{" "}
+                        {
+                          workflow.documents.find(
+                            (d) => d.id === comparison.document2Id,
+                          )?.name
+                        }
                       </h4>
-                      <p className="text-sm text-muted-foreground">{comparison.summary}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {comparison.summary}
+                      </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-2xl font-bold text-primary">{comparison.similarity.toFixed(0)}%</p>
-                      <p className="text-xs text-muted-foreground">Similarity</p>
+                      <p className="text-2xl font-bold text-primary">
+                        {comparison.similarity.toFixed(0)}%
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Similarity
+                      </p>
                     </div>
                   </div>
 
-                  {selectedComparisonId === `${comparison.document1Id}-${comparison.document2Id}` && (
+                  {selectedComparisonId ===
+                    `${comparison.document1Id}-${comparison.document2Id}` && (
                     <div className="mt-4 pt-4 border-t border-border space-y-3">
                       {comparison.differences.map((diff, idx) => (
-                        <div key={idx} className="bg-muted/50 p-3 rounded text-sm">
+                        <div
+                          key={idx}
+                          className="bg-muted/50 p-3 rounded text-sm"
+                        >
                           <div className="flex items-center justify-between mb-2">
                             <span className="font-medium">{diff.field}</span>
                             <div className="flex items-center gap-2">
@@ -155,12 +188,20 @@ export function DocumentComparison({ onComplete }: ComparisonProps) {
                           </div>
                           <div className="grid grid-cols-2 gap-2">
                             <div>
-                              <p className="text-xs text-muted-foreground">Document 1</p>
-                              <p className="text-sm text-foreground">{diff.document1Value || 'N/A'}</p>
+                              <p className="text-xs text-muted-foreground">
+                                Document 1
+                              </p>
+                              <p className="text-sm text-foreground">
+                                {diff.document1Value || "N/A"}
+                              </p>
                             </div>
                             <div>
-                              <p className="text-xs text-muted-foreground">Document 2</p>
-                              <p className="text-sm text-foreground">{diff.document2Value || 'N/A'}</p>
+                              <p className="text-xs text-muted-foreground">
+                                Document 2
+                              </p>
+                              <p className="text-sm text-foreground">
+                                {diff.document2Value || "N/A"}
+                              </p>
                             </div>
                           </div>
                         </div>
@@ -173,17 +214,16 @@ export function DocumentComparison({ onComplete }: ComparisonProps) {
           )}
 
           {comparisons.size > 0 && (
-            <Button
-              onClick={handleProceedToCompliance}
-              className="w-full mt-6"
-            >
+            <Button onClick={handleProceedToCompliance} className="w-full mt-6">
               Proceed to Compliance Check
             </Button>
           )}
         </div>
       ) : (
         <Card className="p-6 text-center">
-          <p className="text-muted-foreground">Upload at least 2 documents to compare them.</p>
+          <p className="text-muted-foreground">
+            Upload at least 2 documents to compare them.
+          </p>
         </Card>
       )}
     </div>

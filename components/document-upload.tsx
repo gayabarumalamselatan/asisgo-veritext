@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useRef, useState } from 'react';
-import { useVerification } from '@/lib/verification-context';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { useRef, useState } from "react";
+import { useVerification } from "@/lib/verification-context";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 interface DocumentUploadProps {
   onComplete?: () => void;
@@ -19,12 +19,14 @@ export function DocumentUpload({ onComplete }: DocumentUploadProps) {
     if (!files) return;
 
     Array.from(files).forEach((file) => {
-      const isText = file.type.includes('text');
-      const isPdf = file.type === 'application/pdf';
-      const isCsv = file.type === 'text/csv' || file.name.endsWith('.csv');
-      const isXlsx = file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || 
-                     file.name.endsWith('.xlsx');
-      
+      const isText = file.type.includes("text");
+      const isPdf = file.type === "application/pdf";
+      const isCsv = file.type === "text/csv" || file.name.endsWith(".csv");
+      const isXlsx =
+        file.type ===
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+        file.name.endsWith(".xlsx");
+
       if (isText || isPdf || isCsv || isXlsx) {
         setIsProcessing(true);
         addDocument(file);
@@ -50,7 +52,7 @@ export function DocumentUpload({ onComplete }: DocumentUploadProps) {
 
   const handleProceed = () => {
     if (workflow && workflow.documents.length > 0) {
-      moveToStep('extract');
+      moveToStep("extract");
       onComplete?.();
     }
   };
@@ -67,8 +69,8 @@ export function DocumentUpload({ onComplete }: DocumentUploadProps) {
             transition-all duration-200
             ${
               isDragging
-                ? 'border-primary bg-primary/5'
-                : 'border-border hover:border-primary/50'
+                ? "border-primary bg-primary/5"
+                : "border-border hover:border-primary/50"
             }
           `}
         >
@@ -95,7 +97,7 @@ export function DocumentUpload({ onComplete }: DocumentUploadProps) {
 
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="inline-block px-6 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
+            className="inline-block px-6 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors hover:cursor-pointer"
           >
             Select Files
           </button>
@@ -116,7 +118,9 @@ export function DocumentUpload({ onComplete }: DocumentUploadProps) {
 
         {workflow && workflow.documents.length > 0 && (
           <div className="mt-8">
-            <h4 className="font-semibold mb-4">Uploaded Documents ({workflow.documents.length})</h4>
+            <h4 className="font-semibold mb-4">
+              Uploaded Documents ({workflow.documents.length})
+            </h4>
             <div className="space-y-2 mb-6">
               {workflow.documents.map((doc) => (
                 <div
@@ -137,9 +141,9 @@ export function DocumentUpload({ onComplete }: DocumentUploadProps) {
             <Button
               onClick={handleProceed}
               disabled={isProcessing}
-              className="w-full"
+              className="w-full hover:cursor-pointer"
             >
-              {isProcessing ? 'Processing...' : 'Proceed to Extraction'}
+              {isProcessing ? "Processing..." : "Proceed to Extraction"}
             </Button>
           </div>
         )}

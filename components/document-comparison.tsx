@@ -112,7 +112,7 @@ export function DocumentComparison({ onComplete }: ComparisonProps) {
                         onClick={() => handleCompareDocuments(doc1.id, doc2.id)}
                         disabled={isProcessing}
                         variant={isCompared ? "default" : "outline"}
-                        className="w-full mb-2 justify-start text-left"
+                        className="w-full mb-2 justify-start text-left hover:cursor-pointer"
                       >
                         <span className="truncate">
                           {doc1.name} vs {doc2.name}
@@ -214,7 +214,10 @@ export function DocumentComparison({ onComplete }: ComparisonProps) {
           )}
 
           {comparisons.size > 0 && (
-            <Button onClick={handleProceedToCompliance} className="w-full mt-6">
+            <Button
+              onClick={handleProceedToCompliance}
+              className="w-full mt-6 hover:cursor-pointer"
+            >
               Proceed to Compliance Check
             </Button>
           )}

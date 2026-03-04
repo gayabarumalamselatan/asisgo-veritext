@@ -134,7 +134,7 @@ export function DocumentExtraction({ onComplete }: ExtractionProps) {
         <Button
           onClick={handleExtractAll}
           disabled={isProcessing || !workflow?.documents.length}
-          className="w-full"
+          className="w-full hover:cursor-pointer"
         >
           {isProcessing
             ? "Extracting..."
@@ -240,7 +240,7 @@ export function DocumentExtraction({ onComplete }: ExtractionProps) {
                       onClick={() => handleExportOCR(extracted, doc.name)}
                       variant="outline"
                       size="sm"
-                      className="flex-1"
+                      className="flex-1 hover:cursor-pointer"
                     >
                       <svg
                         className="w-4 h-4 mr-2"
@@ -264,7 +264,7 @@ export function DocumentExtraction({ onComplete }: ExtractionProps) {
                   onClick={() => handleExtractDocument(doc.id)}
                   disabled={isProcessing}
                   variant="outline"
-                  className="w-full"
+                  className="w-full hover:cursor-pointer"
                 >
                   Extract This Document
                 </Button>
@@ -276,7 +276,10 @@ export function DocumentExtraction({ onComplete }: ExtractionProps) {
 
       {extractedDocuments.size === workflow?.documents.length &&
         workflow.documents.length > 0 && (
-          <Button onClick={handleProceedToComparison} className="w-full mt-6">
+          <Button
+            onClick={handleProceedToComparison}
+            className="w-full mt-6 hover:cursor-pointer"
+          >
             Proceed to Comparison
           </Button>
         )}

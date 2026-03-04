@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useVerification } from '@/lib/verification-context';
-import { ComplianceResult } from '@/lib/types';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { useState } from "react";
+import { useVerification } from "@/lib/verification-context";
+import { ComplianceResult } from "@/lib/types";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 interface ComplianceCheckProps {
   onComplete?: () => void;
@@ -23,9 +23,9 @@ export function ComplianceCheck({ onComplete }: ComplianceCheckProps) {
       const allResults: ComplianceResult[] = [];
 
       for (const extracted of workflow.extracted) {
-        const response = await fetch('/api/compliance', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+        const response = await fetch("/api/compliance", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             extracted,
             documentId: extracted.documentId,
@@ -41,40 +41,46 @@ export function ComplianceCheck({ onComplete }: ComplianceCheckProps) {
       setResults(allResults);
       setComplianceResults(allResults);
     } catch (error) {
-      console.error('Compliance check failed:', error);
+      console.error("Compliance check failed:", error);
     } finally {
       setIsProcessing(false);
     }
   };
 
   const handleProceedToInsights = () => {
-    moveToStep('insights');
+    moveToStep("insights");
     onComplete?.();
   };
 
   const severityColors = {
-    error: 'bg-red-50 dark:bg-red-950 border-red-200 dark:border-red-800',
-    warning: 'bg-yellow-50 dark:bg-yellow-950 border-yellow-200 dark:border-yellow-800',
-    info: 'bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800',
-    success: 'bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800',
+    error: "bg-red-50 dark:bg-red-950 border-red-200 dark:border-red-800",
+    warning:
+      "bg-yellow-50 dark:bg-yellow-950 border-yellow-200 dark:border-yellow-800",
+    info: "bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800",
+    success:
+      "bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800",
   };
 
   const severityIcons = {
-    error: '✕',
-    warning: '⚠',
-    info: 'ℹ',
-    success: '✓',
+    error: "✕",
+    warning: "⚠",
+    info: "ℹ",
+    success: "✓",
   };
 
   const severityTextColors = {
-    error: 'text-red-700 dark:text-red-200',
-    warning: 'text-yellow-700 dark:text-yellow-200',
-    info: 'text-blue-700 dark:text-blue-200',
-    success: 'text-green-700 dark:text-green-200',
+    error: "text-red-700 dark:text-red-200",
+    warning: "text-yellow-700 dark:text-yellow-200",
+    info: "text-blue-700 dark:text-blue-200",
+    success: "text-green-700 dark:text-green-200",
   };
 
-  const errorCount = results.filter((r) => r.severity === 'error' && !r.passed).length;
-  const warningCount = results.filter((r) => r.severity === 'warning' && !r.passed).length;
+  const errorCount = results.filter(
+    (r) => r.severity === "error" && !r.passed,
+  ).length;
+  const warningCount = results.filter(
+    (r) => r.severity === "warning" && !r.passed,
+  ).length;
   const passCount = results.filter((r) => r.passed).length;
 
   return (
@@ -104,9 +110,9 @@ export function ComplianceCheck({ onComplete }: ComplianceCheckProps) {
           <Button
             onClick={handleRunCompliance}
             disabled={isProcessing || !workflow?.extracted.length}
-            className="px-6"
+            className="px-6 hover:cursor-pointer"
           >
-            {isProcessing ? 'Running Checks...' : 'Run Compliance Check'}
+            {isProcessing ? "Running Checks..." : "Run Compliance Check"}
           </Button>
         </Card>
       ) : (
@@ -114,16 +120,28 @@ export function ComplianceCheck({ onComplete }: ComplianceCheckProps) {
           {/* Summary Cards */}
           <div className="grid grid-cols-3 gap-4">
             <Card className="p-4 text-center bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800">
-              <p className="text-2xl font-bold text-green-700 dark:text-green-200">{passCount}</p>
-              <p className="text-xs text-green-600 dark:text-green-300 font-semibold">PASSED</p>
+              <p className="text-2xl font-bold text-green-700 dark:text-green-200">
+                {passCount}
+              </p>
+              <p className="text-xs text-green-600 dark:text-green-300 font-semibold">
+                PASSED
+              </p>
             </Card>
             <Card className="p-4 text-center bg-yellow-50 dark:bg-yellow-950 border-yellow-200 dark:border-yellow-800">
-              <p className="text-2xl font-bold text-yellow-700 dark:text-yellow-200">{warningCount}</p>
-              <p className="text-xs text-yellow-600 dark:text-yellow-300 font-semibold">WARNINGS</p>
+              <p className="text-2xl font-bold text-yellow-700 dark:text-yellow-200">
+                {warningCount}
+              </p>
+              <p className="text-xs text-yellow-600 dark:text-yellow-300 font-semibold">
+                WARNINGS
+              </p>
             </Card>
             <Card className="p-4 text-center bg-red-50 dark:bg-red-950 border-red-200 dark:border-red-800">
-              <p className="text-2xl font-bold text-red-700 dark:text-red-200">{errorCount}</p>
-              <p className="text-xs text-red-600 dark:text-red-300 font-semibold">ERRORS</p>
+              <p className="text-2xl font-bold text-red-700 dark:text-red-200">
+                {errorCount}
+              </p>
+              <p className="text-xs text-red-600 dark:text-red-300 font-semibold">
+                ERRORS
+              </p>
             </Card>
           </div>
 
@@ -138,7 +156,9 @@ export function ComplianceCheck({ onComplete }: ComplianceCheckProps) {
                     <div
                       key={result.id}
                       className={`p-4 rounded-lg border ${
-                        result.passed ? severityColors.success : severityColors[result.severity]
+                        result.passed
+                          ? severityColors.success
+                          : severityColors[result.severity]
                       }`}
                     >
                       <div className="flex items-start gap-3">
@@ -149,22 +169,28 @@ export function ComplianceCheck({ onComplete }: ComplianceCheckProps) {
                               : severityTextColors[result.severity]
                           }`}
                         >
-                          {result.passed ? severityIcons.success : severityIcons[result.severity]}
+                          {result.passed
+                            ? severityIcons.success
+                            : severityIcons[result.severity]}
                         </span>
                         <div className="flex-1">
-                          <p className="font-medium text-sm">{result.message}</p>
-                          <p className="text-xs text-muted-foreground mt-1">Rule: {result.ruleId}</p>
+                          <p className="font-medium text-sm">
+                            {result.message}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Rule: {result.ruleId}
+                          </p>
                         </div>
                         <span
                           className={`text-xs font-semibold px-2 py-1 rounded ${
                             result.passed
-                              ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
-                              : result.severity === 'error'
-                                ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200'
-                                : 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200'
+                              ? "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200"
+                              : result.severity === "error"
+                                ? "bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200"
+                                : "bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200"
                           }`}
                         >
-                          {result.passed ? 'PASS' : 'FAIL'}
+                          {result.passed ? "PASS" : "FAIL"}
                         </span>
                       </div>
                     </div>
@@ -179,13 +205,13 @@ export function ComplianceCheck({ onComplete }: ComplianceCheckProps) {
               onClick={handleRunCompliance}
               disabled={isProcessing}
               variant="outline"
-              className="flex-1"
+              className="flex-1 hover:cursor-pointer"
             >
               Re-run Checks
             </Button>
             <Button
               onClick={handleProceedToInsights}
-              className="flex-1"
+              className="flex-1 hover:cursor-pointer"
             >
               Proceed to Insights
             </Button>

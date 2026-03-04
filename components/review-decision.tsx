@@ -1,18 +1,21 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useVerification } from '@/lib/verification-context';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { useState } from "react";
+import { useVerification } from "@/lib/verification-context";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 interface ReviewProps {
   onComplete?: () => void;
 }
 
 export function ReviewAndDecision({ onComplete }: ReviewProps) {
-  const { workflow, setVerificationResult, moveToStep, addAuditTrail } = useVerification();
-  const [selectedDecision, setSelectedDecision] = useState<'approved' | 'rejected' | 'flagged' | null>(null);
-  const [notes, setNotes] = useState('');
+  const { workflow, setVerificationResult, moveToStep, addAuditTrail } =
+    useVerification();
+  const [selectedDecision, setSelectedDecision] = useState<
+    "approved" | "rejected" | "flagged" | null
+  >(null);
+  const [notes, setNotes] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmitDecision = async () => {
@@ -23,11 +26,11 @@ export function ReviewAndDecision({ onComplete }: ReviewProps) {
       // Record the decision
       const verificationResult = {
         id: `verification-${workflow.id}-${Date.now()}`,
-        documentId: workflow.documents[0]?.id || '',
+        documentId: workflow.documents[0]?.id || "",
         verifiedAt: new Date(),
         status: selectedDecision as any,
         decision: selectedDecision.toUpperCase(),
-        verifiedBy: 'Current User',
+        verifiedBy: "Current User",
         notes,
       };
 
@@ -35,25 +38,25 @@ export function ReviewAndDecision({ onComplete }: ReviewProps) {
 
       // Add audit trail
       addAuditTrail({
-        action: 'VERIFICATION_DECISION_RECORDED',
-        documentId: workflow.documents[0]?.id || '',
+        action: "VERIFICATION_DECISION_RECORDED",
+        documentId: workflow.documents[0]?.id || "",
         timestamp: new Date(),
-        userId: 'system',
+        userId: "system",
         changes: [
           {
-            field: 'verification_status',
-            oldValue: 'pending',
+            field: "verification_status",
+            oldValue: "pending",
             newValue: selectedDecision,
           },
         ],
-        details: `Verification decision: ${selectedDecision}. Notes: ${notes || 'None'}`,
+        details: `Verification decision: ${selectedDecision}. Notes: ${notes || "None"}`,
       });
 
       // Move to completion
-      moveToStep('complete');
+      moveToStep("complete");
       onComplete?.();
     } catch (error) {
-      console.error('Decision submission failed:', error);
+      console.error("Decision submission failed:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -61,35 +64,40 @@ export function ReviewAndDecision({ onComplete }: ReviewProps) {
 
   const decisionOptions = [
     {
-      id: 'approved',
-      title: 'Approve',
-      description: 'Documents verified and approved for processing',
-      color: 'border-green-500 bg-green-50 dark:bg-green-950',
-      textColor: 'text-green-700 dark:text-green-200',
-      icon: '✓',
+      id: "approved",
+      title: "Approve",
+      description: "Documents verified and approved for processing",
+      color: "border-green-500 bg-green-50 dark:bg-green-950",
+      textColor: "text-green-700 dark:text-green-200",
+      icon: "✓",
     },
     {
-      id: 'flagged',
-      title: 'Flag for Review',
-      description: 'Documents contain issues requiring manual review',
-      color: 'border-yellow-500 bg-yellow-50 dark:bg-yellow-950',
-      textColor: 'text-yellow-700 dark:text-yellow-200',
-      icon: '⚠',
+      id: "flagged",
+      title: "Flag for Review",
+      description: "Documents contain issues requiring manual review",
+      color: "border-yellow-500 bg-yellow-50 dark:bg-yellow-950",
+      textColor: "text-yellow-700 dark:text-yellow-200",
+      icon: "⚠",
     },
     {
-      id: 'rejected',
-      title: 'Reject',
-      description: 'Documents do not meet verification standards',
-      color: 'border-red-500 bg-red-50 dark:bg-red-950',
-      textColor: 'text-red-700 dark:text-red-200',
-      icon: '✕',
+      id: "rejected",
+      title: "Reject",
+      description: "Documents do not meet verification standards",
+      color: "border-red-500 bg-red-50 dark:bg-red-950",
+      textColor: "text-red-700 dark:text-red-200",
+      icon: "✕",
     },
   ];
 
   // Summary stats
-  const errorCount = workflow?.compliance.filter((c) => c.severity === 'error' && !c.passed).length || 0;
-  const warningCount = workflow?.compliance.filter((c) => c.severity === 'warning' && !c.passed).length || 0;
-  const anomalyCount = workflow?.insights.flatMap((i) => i.anomalies).length || 0;
+  const errorCount =
+    workflow?.compliance.filter((c) => c.severity === "error" && !c.passed)
+      .length || 0;
+  const warningCount =
+    workflow?.compliance.filter((c) => c.severity === "warning" && !c.passed)
+      .length || 0;
+  const anomalyCount =
+    workflow?.insights.flatMap((i) => i.anomalies).length || 0;
 
   return (
     <div className="w-full max-w-4xl mx-auto">
@@ -100,19 +108,27 @@ export function ReviewAndDecision({ onComplete }: ReviewProps) {
         <h4 className="font-semibold mb-4">Verification Summary</h4>
         <div className="grid grid-cols-4 gap-4">
           <div>
-            <p className="text-2xl font-bold text-foreground">{workflow?.documents.length}</p>
+            <p className="text-2xl font-bold text-foreground">
+              {workflow?.documents.length}
+            </p>
             <p className="text-xs text-muted-foreground">Documents</p>
           </div>
           <div>
-            <p className="text-2xl font-bold text-red-600 dark:text-red-400">{errorCount}</p>
+            <p className="text-2xl font-bold text-red-600 dark:text-red-400">
+              {errorCount}
+            </p>
             <p className="text-xs text-muted-foreground">Critical Issues</p>
           </div>
           <div>
-            <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{warningCount}</p>
+            <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
+              {warningCount}
+            </p>
             <p className="text-xs text-muted-foreground">Warnings</p>
           </div>
           <div>
-            <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{anomalyCount}</p>
+            <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+              {anomalyCount}
+            </p>
             <p className="text-xs text-muted-foreground">Anomalies</p>
           </div>
         </div>
@@ -123,27 +139,39 @@ export function ReviewAndDecision({ onComplete }: ReviewProps) {
         <h4 className="font-semibold mb-4">Verified Documents</h4>
         <div className="space-y-3">
           {workflow?.documents.map((doc) => {
-            const docInsights = workflow.insights.find((i) => i.documentId === doc.id);
-            const docCompliance = workflow.compliance.filter((c) => c.documentId === doc.id);
-            const criticalIssues = docCompliance.filter((c) => c.severity === 'error' && !c.passed).length;
+            const docInsights = workflow.insights.find(
+              (i) => i.documentId === doc.id,
+            );
+            const docCompliance = workflow.compliance.filter(
+              (c) => c.documentId === doc.id,
+            );
+            const criticalIssues = docCompliance.filter(
+              (c) => c.severity === "error" && !c.passed,
+            ).length;
 
             return (
-              <div key={doc.id} className="flex items-center justify-between p-3 bg-card border border-border rounded-lg">
+              <div
+                key={doc.id}
+                className="flex items-center justify-between p-3 bg-card border border-border rounded-lg"
+              >
                 <div>
                   <p className="font-medium text-sm">{doc.name}</p>
                   <p className="text-xs text-muted-foreground">
-                    {criticalIssues > 0 && `${criticalIssues} critical issue${criticalIssues > 1 ? 's' : ''}`}
-                    {docInsights?.anomalies.length ? `, ${docInsights.anomalies.length} anomalies` : ''}
+                    {criticalIssues > 0 &&
+                      `${criticalIssues} critical issue${criticalIssues > 1 ? "s" : ""}`}
+                    {docInsights?.anomalies.length
+                      ? `, ${docInsights.anomalies.length} anomalies`
+                      : ""}
                   </p>
                 </div>
                 <div
                   className={`text-xs font-bold px-2 py-1 rounded ${
                     criticalIssues > 0
-                      ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200'
-                      : 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
+                      ? "bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200"
+                      : "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200"
                   }`}
                 >
-                  {criticalIssues > 0 ? 'ISSUES' : 'OK'}
+                  {criticalIssues > 0 ? "ISSUES" : "OK"}
                 </div>
               </div>
             );
@@ -168,16 +196,22 @@ export function ReviewAndDecision({ onComplete }: ReviewProps) {
                 }
               `}
             >
-              <div className={`text-2xl font-bold mb-2 ${option.textColor}`}>{option.icon}</div>
+              <div className={`text-2xl font-bold mb-2 ${option.textColor}`}>
+                {option.icon}
+              </div>
               <p className="font-semibold text-sm">{option.title}</p>
-              <p className="text-xs text-muted-foreground mt-1">{option.description}</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                {option.description}
+              </p>
             </button>
           ))}
         </div>
 
         {/* Notes */}
         <div className="mb-6">
-          <label className="text-sm font-semibold mb-2 block">Additional Notes (Optional)</label>
+          <label className="text-sm font-semibold mb-2 block">
+            Additional Notes (Optional)
+          </label>
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
@@ -190,9 +224,9 @@ export function ReviewAndDecision({ onComplete }: ReviewProps) {
         <Button
           onClick={handleSubmitDecision}
           disabled={!selectedDecision || isSubmitting}
-          className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+          className="w-full bg-primary text-primary-foreground hover:bg-primary/90 hover:cursor-pointer"
         >
-          {isSubmitting ? 'Submitting...' : 'Submit Decision & Continue'}
+          {isSubmitting ? "Submitting..." : "Submit Decision & Continue"}
         </Button>
       </Card>
     </div>
